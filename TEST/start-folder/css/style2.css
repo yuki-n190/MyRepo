@@ -44,6 +44,7 @@ header {
     margin: 0 auto;
     padding: 44px 0 28px;
     border-bottom: 1px solid var(--line-color);
+    text-align: center;
 }
 
 header h1 {
@@ -56,6 +57,7 @@ header h1 {
 
 .nav-list {
     display: flex;
+    justify-content: center;
     gap: 28px;
     list-style: none;
     margin: 0;
@@ -88,6 +90,7 @@ section {
     background: transparent;
     border-bottom: 1px solid var(--line-color);
     box-shadow: none;
+    text-align: center;
 }
 
 section h2 {
@@ -109,6 +112,7 @@ section h2::after {
 
 section p {
     max-width: 720px;
+    margin: 0 auto;
     color: var(--muted-color);
     font-size: 15px;
     line-height: 1.9;
@@ -117,7 +121,7 @@ section p {
 
 /* Profile */
 .profile {
-    text-align: left;
+    text-align: center;
 }
 
 .profile-img {
@@ -125,7 +129,7 @@ section p {
     height: 230px;
     object-fit: cover;
     border-radius: 0;
-    margin-bottom: 28px;
+    margin: 0 auto 28px;
     filter: grayscale(100%) contrast(1.08) brightness(0.85);
     border: 1px solid var(--line-color);
 }
@@ -138,15 +142,16 @@ section p {
 }
 
 .skill-list li {
-    display: block;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--line-color);
+    display: inline-block;
+    margin: 8px;
+    padding: 12px 18px;
+    border: 1px solid var(--line-color);
     color: var(--text-color);
     font-size: 15px;
 }
 
 .skill-list li::before {
-    content: "↳ ";
+    content: "— ";
     color: var(--accent-color);
 }
 
@@ -186,7 +191,7 @@ section p {
     background: transparent;
     border-bottom: 1px solid var(--line-color);
     box-shadow: none;
-    text-align: left;
+    text-align: center;
 }
 
 .contact-form h2 {
@@ -206,6 +211,7 @@ form {
     display: flex;
     flex-direction: column;
     gap: 18px;
+    text-align: left;
 }
 
 label {
@@ -246,7 +252,7 @@ select option {
 
 button {
     width: fit-content;
-    margin-top: 12px;
+    margin: 12px auto 0;
     padding: 14px 22px;
     border: 1px solid var(--line-color);
     background: transparent;
@@ -268,7 +274,7 @@ footer {
     margin: 72px auto 0;
     padding: 32px 0;
     border-top: 1px solid var(--line-color);
-    text-align: left;
+    text-align: center;
     color: var(--muted-color);
     font-size: 13px;
 }
@@ -300,6 +306,12 @@ footer {
     .profile-img {
         width: 150px;
         height: 195px;
+    }
+
+    .skill-list li {
+        display: block;
+        margin: 10px auto;
+        max-width: 260px;
     }
 
     .portfolio img,
