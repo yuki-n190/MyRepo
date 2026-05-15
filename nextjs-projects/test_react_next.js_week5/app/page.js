@@ -78,8 +78,10 @@
 
 import Image from "next/image";
 import Counter from "./counter";
+import Link from "next/link";
 
 export default function Page() {
+  const postIds = [1, 2, 3];
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black min-h-screen">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-center py-20 px-16 bg-white dark:bg-black shadow-xl rounded-2xl">
@@ -93,6 +95,17 @@ export default function Page() {
           height={24}
           priority
         />
+        {/* 記事一覧とリンク}*/}
+        <h1>記事一覧</h1>
+        <ul>
+          {postIds.map((id) => (
+            <li key={id}>
+              <Link href={`/post/${id}`}>記事 {id} を読む</Link>
+            </li>
+          ))}
+        </ul>
+          
+        <Link href="/about">Aboutページへ移動</Link>
 
         {/* メインコンテンツ：カウンター */}
         <div className="flex flex-col items-center gap-8 text-center mb-10">
