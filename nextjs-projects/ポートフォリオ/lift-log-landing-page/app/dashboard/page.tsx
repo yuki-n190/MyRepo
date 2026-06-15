@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { id } from "date-fns/locale"
 
 const motivationalQuotes = [
   "The only bad workout is the one that didn't happen.",
@@ -78,6 +77,8 @@ export default function DashboardPage() {
       name: exercise,
       weight: `${weight}kg`,
       sets: `${reps}×${sets}`,
+      tag,
+      memo,
       date: "Today",
     }
     
@@ -99,6 +100,7 @@ export default function DashboardPage() {
   //記録削除機能
   //指定されたID以外のworkoutだけ残して、一覧を更新する
   const handleDeleteWorkout = (id: string) => {
+    console.log("delete clicked:", id)
     setWorkouts(workouts.filter((workout) => workout.id !== id))
   }
 
@@ -339,6 +341,12 @@ export default function DashboardPage() {
                     key={workout.id}
                     className="flex items-center justify-between py-4 border-b border-border last:border-0"
                   >
+                  <Button
+                  type="button"
+                  onClick={() => handleDeleteWorkout(workout.id)}
+                  >
+                  Delete
+                  </Button>
                     <div>
                       <h3 className="font-display text-xl tracking-tight">{workout.name}</h3>
                       <p className="text-sm text-muted-foreground mt-1">
