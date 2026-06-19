@@ -132,7 +132,7 @@ export default function DashboardPage() {
 
     fetchWorkouts()
   }, [])
-  
+
   //APIでRDSに保存処理
   const handleSaveWorkout = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault()
@@ -215,9 +215,26 @@ export default function DashboardPage() {
 
   //記録削除機能
   //指定されたID以外のworkoutだけ残して、一覧を更新する
-  const handleDeleteWorkout = (id: string) => {
-    console.log("delete clicked:", id)
-    setWorkouts(workouts.filter((workout) => workout.id !== id))
+  const handleDeleteWorkout = async (id: string) => {
+
+    console.log("clicked delete id:", id)
+
+    try {
+      const response = await fetch(`/api/workouts/${id}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        setError(data.message || "削除に失敗しました")
+        return
+      }
+
+      setWorkouts(workouts.filter((workout) => workout.id !== id))
+    } catch (error) {
+      console.error(error)
+      setError("削除中にエラーが発生しました")
+    }
   }
 
   const todayQuote = motivationalQuotes[0]
