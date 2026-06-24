@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+
+import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { NullTypes } from "@prisma/client/runtime/client";
+import next from "next";
 
 export const dynamic = "force-dynamic"
 
@@ -31,16 +33,12 @@ export async function POST(request: Request) {
             )
         }
 
-        const user = await prisma.user.findUnique({
-            where: {
-                email: "test@example.com",
-            },
-        })
+        const user = await getCurrentUser()
 
         if (!user) {
             return NextResponse.json(
-                { message: "Test user not found. Run /api/seed first." },
-                { status: 404 }
+                { message: "Unauthorized" },
+                { status: 401 }
             )
         }
 
@@ -79,7 +77,19 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    const user = await getCurrentUser()
+
+    if (!user) {
+        return NextResponse.json(
+            { message: "Unauthorized" },
+            { status: 401 }
+        )
+    }
+
     const workouts = await prisma.workoutLog.findMany({
+      where: {
+        userId: user.id
+      },
       orderBy: {
         createdAt: "desc",
       },
