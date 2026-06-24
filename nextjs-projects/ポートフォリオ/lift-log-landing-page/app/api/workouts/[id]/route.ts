@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
+
+import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { Weight } from "lucide-react"
-import { set } from "date-fns"
 
 export const dynamic = "force-dynamic"
 
@@ -17,6 +17,29 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params
+
+    const user = await getCurrentUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    const existingWorkout = await prisma.workoutLog.findFirst({
+      where: {
+        id,
+        userId: user.id,
+      },
+    })
+
+    if (!existingWorkout) {
+      return NextResponse.json(
+        { message: "Workout not found." },
+        { status: 404 }
+      )
+    }
 
     await prisma.workoutLog.delete({
       where: {
@@ -50,10 +73,33 @@ export async function PATCH(
 
     const { exerciseName, weight, reps, sets, rest, tag, memo } = body
     
-    if ( !exerciseName || !Weight || !reps || !sets ) {
+    if ( !exerciseName || !weight || !reps || !sets ) {
       return NextResponse.json(
         { message: "Required fields are missing." },
         { status: 400 }
+      )
+    }
+
+    const user = await getCurrentUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    const existingWorkout = await prisma.workoutLog.findFirst({
+      where: {
+        id,
+        userId: user.id,
+      },
+    })
+
+    if (!existingWorkout) {
+      return NextResponse.json(
+        { message: "Workout not found." },
+        { status: 404 }
       )
     }
 

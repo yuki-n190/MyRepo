@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { getCurrentUser } from "@/lib/auth"
 import { ArrowLeft } from "lucide-react"
 
 import { prisma } from "@/lib/prisma"
@@ -16,9 +17,16 @@ export default async function EditWorkoutPage({
 }: EditWorkoutPageProps) {
     const { id } = await params
     
-    const workout = await prisma.workoutLog.findUnique({
+    const user = await getCurrentUser()
+
+    if (!user) {
+      redirect("/sign-in")
+    }
+
+    const workout = await prisma.workoutLog.findFirst({
         where: {
             id,
+            userId: user.id
         },
     })
 
