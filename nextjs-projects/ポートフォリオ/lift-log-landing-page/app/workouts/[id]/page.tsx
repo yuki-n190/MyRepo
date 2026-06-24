@@ -1,11 +1,11 @@
 import Link from "next/link"
 import { ArrowLeft, Pencil, Dumbbell } from "lucide-react"
-import { notFound } from "next/navigation"
+import { getCurrentUser } from "@/lib/auth"
+import { notFound, redirect } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { prisma } from "@/lib/prisma"
 import { DeleteWorkoutButton } from "@/components/delete-workout-button"
-import { Value } from "@radix-ui/react-select"
 
 type WorkoutDetailPageProps = {
   params: Promise<{
@@ -16,9 +16,16 @@ type WorkoutDetailPageProps = {
 export default async function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const { id } = await params
 
-  const workout = await prisma.workoutLog.findUnique({
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect("/sign-in")
+  }
+
+  const workout = await prisma.workoutLog.findFirst({
     where: {
       id,
+      userId: user.id
     },
   })
 

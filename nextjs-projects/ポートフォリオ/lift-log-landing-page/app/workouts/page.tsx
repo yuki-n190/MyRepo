@@ -2,9 +2,20 @@ import Link from "next/link"
 import { ArrowLeft, Dumbbell } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { prisma } from "@/lib/prisma"
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/lib/auth"
 
 export default async function WorkoutsPage() {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect("/sign-in")
+  }
+
   const workouts = await prisma.workoutLog.findMany({
+    where: {
+      userId: user.id
+    },
     orderBy: {
       createdAt: "desc",
     },
