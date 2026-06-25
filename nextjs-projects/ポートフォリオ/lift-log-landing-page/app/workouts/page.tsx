@@ -2,9 +2,20 @@ import Link from "next/link"
 import { ArrowLeft, Dumbbell } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { prisma } from "@/lib/prisma"
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/lib/auth"
 
 export default async function WorkoutsPage() {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect("/sign-in")
+  }
+
   const workouts = await prisma.workoutLog.findMany({
+    where: {
+      userId: user.id
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -41,7 +52,7 @@ export default async function WorkoutsPage() {
           </h1>
 
           <p className="mt-3 text-lg text-muted-foreground">
-            Review every set, rep, and lift.
+            Log every set. Build visible progress.
           </p>
         </section>
 

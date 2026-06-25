@@ -1,5 +1,7 @@
 "use client"
 
+import React, { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -7,6 +9,60 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function SignUpPage() {
+  const router = useRouter()
+
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<{
+    username?: string
+    email?: string
+    password?: string
+    confirmPassword?: string
+  }>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    setError("")
+    setFieldErrors({})
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          confirmPassword,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.message || "アカウント作成に失敗しました。")
+        setFieldErrors(data.errors || {})
+        return
+      }
+
+      router.push("./dashboard")
+      router.refresh()
+    } catch (error) {
+      console.error(error)
+      setError("予期しないエラーが発生しました。")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <main className="min-h-screen flex flex-col">
       {/* Header */}
@@ -43,7 +99,13 @@ export default function SignUpPage() {
           </div>
 
           {/* Form */}
-          <form className="space-y-5">
+          <form  onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <p className="text-sm text-red-500">
+                {error}
+              </p> 
+            )}
+
             <div className="space-y-2">
               <Label
                 htmlFor="username"
@@ -55,9 +117,16 @@ export default function SignUpPage() {
                 id="username"
                 type="text"
                 placeholder="ironwarrior"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="h-14 bg-input border-border text-base px-4 placeholder:text-muted-foreground/50"
                 required
               />
+              {fieldErrors.username && (
+                <p className="text-xs text-red-500">
+                  {fieldErrors.username}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -71,10 +140,17 @@ export default function SignUpPage() {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="h-14 bg-input border-border text-base px-4 placeholder:text-muted-foreground/50"
                 required
               />
             </div>
+            {fieldErrors.email && (
+              <p className="text-xs text-red-500">
+                {fieldErrors.email}
+              </p>
+            )}
 
             <div className="space-y-2">
               <Label
@@ -87,9 +163,16 @@ export default function SignUpPage() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="h-14 bg-input border-border text-base px-4 placeholder:text-muted-foreground/50"
                 required
               />
+              {fieldErrors.password && (
+                <p className="text-xs text-red-500">
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -103,16 +186,24 @@ export default function SignUpPage() {
                 id="confirm-password"
                 type="password"
                 placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="h-14 bg-input border-border text-base px-4 placeholder:text-muted-foreground/50"
                 required
               />
+              {fieldErrors.confirmPassword && (
+                <p className="text-xs text-red-500">
+                  {fieldErrors.confirmPassword}
+                </p>
+              )}
             </div>
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="w-full h-16 text-sm uppercase tracking-widest font-medium mt-6"
             >
-              Create Account
+              {isSubmitting ? "Creating..." : "Create Account"}
             </Button>
           </form>
 

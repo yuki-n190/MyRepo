@@ -1,24 +1,34 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-function Header() {
+type HeaderProps = {
+  ctaHref: string
+  isSignedIn: boolean
+}
+
+function Header({ ctaHref, isSignedIn }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        <span className="font-display text-2xl tracking-wider">LIFTLOG</span>
+        <Link href="/" className="font-display text-2xl tracking-wider">
+          LIFTLOG
+        </Link>
         <div className="flex items-center gap-6">
           <Link
-            href="/sign-in"
+            href={isSignedIn ? "/workouts" : "/sign-in"}
             className="text-sm uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
           >
-            Sign In
+            {isSignedIn ? "My Workouts" : "Sign In"}
           </Link>
           <Button asChild className="h-12 px-8 text-sm uppercase tracking-widest font-medium">
-            <Link href="/sign-up">Get Started</Link>
+            <Link href={ctaHref}>
+              {isSignedIn ? "Dashboard" : "Get Started"}
+            </Link>
           </Button>
         </div>
       </nav>
@@ -26,7 +36,11 @@ function Header() {
   )
 }
 
-function HeroSection() {
+type HeroSectionProps = {
+  ctaHref: string
+}
+
+function HeroSection({ ctaHref }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen flex items-center">
       {/* Background Image */}
@@ -53,28 +67,33 @@ function HeroSection() {
             Just you and the iron.
           </p>
           <div className="mt-12 flex flex-wrap gap-4">
-            <Button size="lg" className="h-16 px-12 text-sm uppercase tracking-widest font-medium">
-              Start Training
-              <ArrowRight className="ml-3 h-5 w-5" />
+            <Button asChild size="lg" className="h-16 px-12 text-sm uppercase tracking-widest font-medium">
+              <Link href={ctaHref}>
+                Start Training
+                <ArrowRight className="ml-3 h-5 w-5" />
+              </Link>
             </Button>
           </div>
         </div>
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10">
+      <a
+        href="#philosophy"
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10"
+      >
         <div className="flex flex-col items-center gap-4">
           <span className="text-xs uppercase tracking-widest text-muted-foreground">Scroll</span>
           <div className="h-16 w-px bg-gradient-to-b from-muted-foreground to-transparent" />
         </div>
-      </div>
+      </a>
     </section>
   )
 }
 
 function ManifestoSection() {
   return (
-    <section className="relative py-32 md:py-48 px-6">
+    <section id="philosophy" className="relative py-32 md:py-48 px-6">
       <div className="mx-auto max-w-7xl">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
@@ -100,35 +119,11 @@ function ManifestoSection() {
   )
 }
 
-function StatsSection() {
-  const stats = [
-    { value: "47", label: "WORKOUTS LOGGED" },
-    { value: "12", label: "DAY STREAK" },
-    { value: "24.5K", label: "LBS MOVED" },
-  ]
-
-  return (
-    <section className="py-24 px-6 border-t border-border">
-      <div className="mx-auto max-w-7xl">
-        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-16 text-center">Your Progress</p>
-        <div className="grid md:grid-cols-3 gap-12 md:gap-0 md:divide-x divide-border">
-          {stats.map((stat, i) => (
-            <div key={i} className="text-center px-8">
-              <span className="font-display text-7xl md:text-8xl lg:text-9xl tracking-tight">{stat.value}</span>
-              <p className="mt-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function ImageSection() {
   return (
     <section className="relative h-screen">
       <Image
-        src="/images/athlete-training.png"
+        src="/images/athlete-training.jpg"
         alt="Athlete training intensely"
         fill
         className="object-cover"
@@ -155,20 +150,19 @@ function FeaturesSection() {
     {
       number: "01",
       title: "TRACK",
-      description: "Log every set, rep, and pound. Fast. Frictionless. Built for the gym floor.",
+      description: "Log exercise, weight, reps, sets, rest time, tags, and notes in seconds.",
     },
     {
       number: "02",
-      title: "ANALYZE",
-      description: "See exactly where you&apos;re improving. Identify weaknesses. Eliminate guesswork.",
+      title: "REVIEW",
+      description: "Open recent workouts, revisit every session, and keep your training history clean.",
     },
     {
       number: "03",
       title: "PROGRESS",
-      description: "Watch your numbers climb. Celebrate PRs. Become the strongest version of yourself.",
+      description: "Track personal records, weekly workouts, streaks, and total logs without guesswork.",
     },
   ]
-
   return (
     <section className="py-32 md:py-48 px-6 border-t border-border">
       <div className="mx-auto max-w-7xl">
@@ -182,10 +176,10 @@ function FeaturesSection() {
         </div>
         <div className="grid md:grid-cols-3 gap-16">
           {features.map((feature, i) => (
-            <div key={i} className="group">
-              <span className="font-display text-6xl md:text-7xl text-muted-foreground/30 group-hover:text-foreground transition-colors">
-                {feature.number}
-              </span>
+          <div key={i}>
+            <span className="font-display text-6xl md:text-7xl text-muted-foreground/30">
+              {feature.number}
+            </span>
               <h3 className="mt-6 font-display text-3xl md:text-4xl tracking-tight">{feature.title}</h3>
               <p className="mt-4 text-muted-foreground leading-relaxed">{feature.description}</p>
             </div>
@@ -196,7 +190,11 @@ function FeaturesSection() {
   )
 }
 
-function CTASection() {
+type CTASectionProps = {
+  ctaHref: string
+}
+
+function CTASection({ ctaHref }: CTASectionProps) {
   return (
     <section className="py-32 md:py-48 px-6 border-t border-border">
       <div className="mx-auto max-w-7xl text-center">
@@ -207,9 +205,11 @@ function CTASection() {
           LIFTING.
         </h2>
         <div className="mt-16">
-          <Button size="lg" className="h-20 px-16 text-base uppercase tracking-widest font-medium">
-            Begin Now
-            <ArrowRight className="ml-4 h-6 w-6" />
+          <Button asChild size="lg" className="h-20 px-16 text-base uppercase tracking-widest font-medium">
+            <Link href={ctaHref}>
+              Begin Now
+              <ArrowRight className="ml-4 h-6 w-6" />
+            </Link>
           </Button>
         </div>
         <p className="mt-8 text-sm text-muted-foreground uppercase tracking-widest">
@@ -236,15 +236,35 @@ function Footer() {
 }
 
 export default function LiftLogLanding() {
+  const [isSignedIn, setIsSignedIn] = useState(false)
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me", {
+          cache: "no-store",
+        })
+
+        setIsSignedIn(response.ok)
+      } catch (error) {
+        console.error(error)
+        setIsSignedIn(false)
+      }
+    }
+
+    checkAuth()
+  }, [])
+
+  const ctaHref = isSignedIn ? "/dashboard" : "/sign-up"
+
   return (
     <main className="min-h-screen">
-      <Header />
-      <HeroSection />
+      <Header ctaHref={ctaHref} isSignedIn={isSignedIn} />
+      <HeroSection ctaHref={ctaHref} />
       <ManifestoSection />
-      <StatsSection />
-      <ImageSection />
+      <ImageSection/>
       <FeaturesSection />
-      <CTASection />
+      <CTASection ctaHref={ctaHref} />
       <Footer />
     </main>
   )
